@@ -1,0 +1,73 @@
+# Defines that this file uses version 3.9 of the Docker Compose schema.
+version: "3.9"
+
+# Defines the network used by all containers. Name: main
+# All IP addresses fall within the subnet 192.168.1.0/24. This makes it easier to configure NGINX.
+networks:
+    main:
+        ipam:
+            config:
+                - subnet: 192.168.1.0/24
+
+# Defines the volume used by the MySQL container. Name: db
+volumes:
+    db: {}
+
+# In this section, services can be defined.
+services:
+    # Service: db. Used to hold data that can be queried from other services.
+    db:
+        # Sets a hostname on the machine. This way it's easily accessible from the apache containers.
+        hostname: sql
+        # Declares that the image used should be built using the Dockerfile located in ./sql/.
+        build:
+            context: ./sql/
+        # Sets 2 environment variables that determine the password for the root MySQL user, and the name of the database.
+        environment:
+            MYSQL_ROOT_PASSWORD: password
+            MYSQL_DATABASE: apache
+        # Declares that the "db" volume should be mapped to the /var/lib/mysql/ directory on the container.
+        # This ensures that the data in the database persists between instances of this service.
+        volumes:
+            - db:/var/lib/mysql/
+        # Declares that this container should use the "main" network. This way it can communicate with the other services.
+        networks:
+            - main
+
+    # Service: apache. Used for serving the PHP web page.
+    apache:
+        # Declares that the image used should be built using the Dockerfile located in ./apache-server/.
+        build:
+            context: ./apache-server/
+        # Declares that 3 replicas of this container should run simultaneously. This is done for load balancing purposes.
+        deploy:
+            replicas: 3
+        # Declares that the "db" service defined above need to be running for this container to function.
+        depends_on:
+            - db
+        # Maps the local ./php/ directory to the /var/www/html directory on the container.
+        # /var/www/html is the directory where the website source for Apache is located.
+        # This is done to easily change the PHP code on the host machine, rather than having to change it on the guest machine.
+        volumes:
+            - ./php:/var/www/html
+        # Declares that this container should use the "main" network. This way it can communicate with the other services.
+        networks:
+            - main
+        # Necessary for keeping the container alive after startup.
+        tty: true
+
+    # Service: nginx. Used for load balancing between the 3 apache servers defined above.
+    nginx:
+        # Declares that the image used should be built using the Dockerfile located in ./nginx-proxy/.
+        build:
+            context: ./nginx-proxy/
+        # Declares that the "apache" service defined above need to be running for this container to function.
+        depends_on:
+            - apache
+        # Declares that port 80 on the host machine should be forwarded to port 80 on the container.
+        # This way the webpage can be reached at http://localhost/.
+        ports:
+            - "80:80"
+        # Declares that this container should use the "main" network. This way it can communicate with the other services.
+        networks:
+            - main
