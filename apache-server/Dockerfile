@@ -16,6 +16,8 @@ RUN apt install -y php-mysql
 
 # Copies the startup script from the host machine to the container.
 COPY startup.sh /bin/
+# Allows the startup script to be executed by adding the execute (x) permission.
+RUN chmod +x /bin/startup.sh
 # Runs the script containing necessary commands on startup,
 # then prevents the container from shutting down by opening a command interface.
 ENTRYPOINT /bin/startup.sh && bash
