@@ -7,11 +7,10 @@ Open the file, and add this line of code:
 ```diff
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/ubuntu2204"
-+ config.vm.network "forwarded_port", guest: 80, host: 8085
++ config.vm.network "private_network", ip: "192.168.56.5"
 end
 ```
-This will ensure that port 8085 on the host machine will be forwarded to port 80 on the guest machine. 
-Port 80 is the port that gets used for http requests.
+This will ensure that the guest machine is available at the ip `192.168.56.5`.
 
 Save the file, then run:
 ```bash
@@ -79,4 +78,4 @@ Lastly, run the command below to start the services defined in `docker-compose.y
 $ docker compose up
 ```
 
-If all went well, the hosted webpage should now be available at http://localhost:8085 on the host machine.
+If all went well, the hosted webpage should now be available at http://192.168.56.5:8085 on the host machine.

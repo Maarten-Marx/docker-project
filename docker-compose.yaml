@@ -73,7 +73,7 @@ services:
         # Declares that port 80 on the host machine should be forwarded to port 80 on the container.
         # This way the webpage can be reached at http://localhost/.
         ports:
-            - "80:80"
+            - "8085:80"
         # Declares that this container should use the "main" network. This way it can communicate with the other services.
         networks:
             - main
