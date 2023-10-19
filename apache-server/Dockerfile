@@ -9,8 +9,7 @@ RUN apt update
 # DEBIAN_FRONTEND=noninteractive is used to circumvent some questions that are asked during the installation process.
 # Without either of these, the container would either stop automatically, or get stuck.
 RUN apt install -y apache2
-RUN DEBIAN_FRONTEND=noninteractive apt install -y php
-RUN apt install -y libapache2-mod-php
+RUN DEBIAN_FRONTEND=noninteractive apt install -y libapache2-mod-php
 RUN apt install -y php-mysql
 
 
