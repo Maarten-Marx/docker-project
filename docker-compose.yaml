@@ -16,14 +16,12 @@ volumes:
 # In this section, services can be defined.
 services:
     # Service: db. Used to hold data that can be queried from other services.
-    db:
+    contsql-m1-mm:
         # Sets a hostname on the machine. This way it's easily accessible from the apache containers.
         hostname: sql
         # Declares that the image used should be built using the Dockerfile located in ./sql/.
         build:
             context: ./sql/
-        # Sets the name of this image.
-        image: "contsql-m1-mm"
         # Sets 2 environment variables that determine the password for the root MySQL user, and the name of the database.
         environment:
             MYSQL_ROOT_PASSWORD: password
@@ -37,18 +35,16 @@ services:
             - main
 
     # Service: apache. Used for serving the PHP web page.
-    apache:
+    contapa2-m1-mm:
         # Declares that the image used should be built using the Dockerfile located in ./apache-server/.
         build:
             context: ./apache-server/
-        # Sets the name of this image.
-        image: "contapa2-m1-mm"
         # Declares that 3 replicas of this container should run simultaneously. This is done for load balancing purposes.
         deploy:
             replicas: 3
         # Declares that the "db" service defined above need to be running for this container to function.
         depends_on:
-            - db
+            - contsql-m1-mm
         # Maps the local ./php/ directory to the /var/www/html directory on the container.
         # /var/www/html is the directory where the website source for Apache is located.
         # This is done to easily change the PHP code on the host machine, rather than having to change it on the guest machine.
@@ -61,15 +57,13 @@ services:
         tty: true
 
     # Service: nginx. Used for load balancing between the 3 apache servers defined above.
-    nginx:
+    contnginx-m1-mm:
         # Declares that the image used should be built using the Dockerfile located in ./nginx-proxy/.
         build:
             context: ./nginx-proxy/
-        # Sets the name of this image.
-        image: "contnginx-m1-mm"
         # Declares that the "apache" service defined above need to be running for this container to function.
         depends_on:
-            - apache
+            - contapa2-m1-mm
         # Declares that port 80 on the host machine should be forwarded to port 80 on the container.
         # This way the webpage can be reached at http://localhost/.
         ports:
