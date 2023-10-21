@@ -48,7 +48,7 @@ Then, add the created user to the `docker` group using the following command:
 ```bash
 $ sudo usermod -aG docker <username>
 ```
-The options `-ag` specify that the user needs to be added to a group. `docker` is the group the user is being added to.  
+The options `-aG` specify that the user needs to be added to a group. `docker` is the group the user is being added to.
 By adding the user to this group, the use of `sudo` won't be necessary from this point on.
 
 Lastly, switch to the new user, then move to its home directory.
