@@ -75,7 +75,8 @@ $ cd docker-project
 
 Lastly, run the command below to start the services defined in `docker-compose.yaml`. This can take a while.
 ```bash
-$ docker compose up
+$ docker compose up -d
 ```
+`-d` makes sure Docker doesn't hijack the current terminal while running the services.
 
 If all went well, the hosted webpage should now be available at http://192.168.56.5:8085 on the host machine.
